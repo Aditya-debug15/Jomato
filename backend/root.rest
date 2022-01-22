@@ -1,0 +1,117 @@
+POST http://172.31.24.82:4000/user/register
+Content-Type: application/json
+
+{
+    "name":"gg02",
+    "email":"g02@gmail.com",
+    "ContactNumber": "9876543210",
+    "age": 19,
+    "batch": 2,
+    "Password": "hello"
+}
+
+###
+
+GET http://localhost:4000/user
+
+###
+
+GET http://localhost:4000/user/listitems
+
+###
+GET http://localhost:4000/user/vendor
+
+###
+POST http://localhost:4000/user/register
+Content-Type: application/json
+
+{
+    "name":"gg02",
+    "usertype":"vendor",
+    "email":"g02@gmail.com",
+    "ContactNumber": "9876543210",
+    "shopname":"JC",
+    "opentime": "9pm",
+    "closetime":"3am",
+    "Password": "hello"
+}
+
+###
+POST http://localhost:4000/vendor/additem
+Content-Type: application/json
+
+{
+    "name":"maggi",
+    "price": 15,
+    "email": "g",
+    "VegORnot": "Non Veg",
+    "tags": ["hot","peri peri"],
+    "Addon": [{"Item":"extra mayo","Price":15},{"Item":"extra sauce","Price":25}]
+}
+
+###
+POST  http://localhost:4000/vendor/listitem
+Content-Type: application/json
+
+{
+    "email":"g"
+}
+
+###
+POST http://localhost:4000/vendor/editprofile
+Content-Type: application/json
+
+{
+    "email":"g",
+    "ContactNumber":9999000010,
+    "OpenTime":"10:00",
+    "CloseTime":"12:00",
+    "Password":"siya"
+}
+
+###
+POST http://localhost:4000/vendor/editgetprofile
+Content-Type: application/json
+
+{
+    "email":"g"
+}
+
+###
+POST http://localhost:4000/vendor/edititem
+Content-Type: application/json
+
+{
+    "email":"g",
+    "name":"maggi",
+    "price":10,
+    "VegORnot":"Veg",
+    "tags":["Bekar"],
+    "Addon": [{"Item":"cheese","Price":10},{"Item":"butter","Price":15}]
+}
+
+###
+POST http://localhost:4000/vendor/editgetitem
+Content-Type: application/json
+
+{
+    "email":"g",
+    "name":"maggi"
+}
+
+###
+POST http://localhost:4000/vendor/removeitem
+Content-Type: application/json
+
+{
+    "email":"g",
+    "name":"pasta"
+}
+
+###
+POST http://localhost:4000/user/editgetprofile
+Content-Type: application/json
+
+{
+    "email":"sidhh@gmail.com"
+}
