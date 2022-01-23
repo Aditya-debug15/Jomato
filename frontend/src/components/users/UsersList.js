@@ -15,15 +15,17 @@ import Divider from "@mui/material/Divider";
 import Autocomplete from "@mui/material/Autocomplete";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-
+import StarIcon from '@mui/icons-material/Star';
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { Checkbox } from "@mui/material";
 
 const UsersList = (props) => {
   const [users, setUsers] = useState([]);
   const [sortedUsers, setSortedUsers] = useState([]);
   const [sortName, setSortName] = useState(true);
+  const [sortName2, setSortName2] = useState(true);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -43,8 +45,8 @@ const UsersList = (props) => {
     let usersTemp = users;
     const flag = sortName;
     usersTemp.sort((a, b) => {
-      if (a.date != undefined && b.date != undefined) {
-        return (1 - flag * 2) * (new Date(a.date) - new Date(b.date));
+      if (a.price != undefined && b.price != undefined) {
+        return (1 - flag * 2) * (new Date(a.price) - new Date(b.price));
       } else {
         return 1;
       }
@@ -52,11 +54,53 @@ const UsersList = (props) => {
     setUsers(usersTemp);
     setSortName(!sortName);
   };
-
+  const sortChange2 = () => {
+    let usersTemp = users;
+    const flag = sortName2;
+    usersTemp.sort((a, b) => {
+      if (a.rating != undefined && b.rating != undefined) {
+        return (1 - flag * 2) * (new Date(a.rating) - new Date(b.rating));
+      } else {
+        return 1;
+      }
+    });
+    setUsers(usersTemp);
+    setSortName2(!sortName2);
+  };
+  const AddFavour = (event) =>{
+    const NewFavour = {
+      "email":localStorage.getItem('email'),
+      "Favourite":event.target.value
+    }
+    console.log(NewFavour)
+    axios
+    .post("http://localhost:4000/user/addfavourite",NewFavour)
+    .then((response) => {
+      if(response.data.status === "Success")
+      {
+        if(response.data.newvalues.nModified == 0)
+        {
+          alert("Already in the list")
+        }
+        else{
+            alert("Added !!")
+        }
+      }
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+  }
   const customFunction = (event) => {
     console.log(event.target.value);
     setSearchText(event.target.value);
   };
+
+  var AddonArray = []
+
+  const onChangeCheckbox = (event) => {
+
+  }
 
   return (
     <div>
@@ -83,7 +127,7 @@ const UsersList = (props) => {
                   </InputAdornment>
                 ),
               }}
-              // onChange={customFunction}
+            // onChange={customFunction}
             />
           </List>
         </Grid>
@@ -141,19 +185,42 @@ const UsersList = (props) => {
                     <Button onClick={sortChange}>
                       {sortName ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
                     </Button>
-                    Date
+                    Price
                   </TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
+                  <TableCell>Item Name</TableCell>
+                  <TableCell>{" "}
+                    <Button onClick={sortChange2}>
+                      {sortName2 ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
+                    </Button>
+                    Rating</TableCell>
+                  <TableCell>Veg / Non Veg</TableCell>
+                  <TableCell>Seller name</TableCell>
+                  <TableCell>Shop name</TableCell>
+                  <TableCell>Addons</TableCell>
+                  <TableCell>Add Favourite</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {users.map((user, ind) => (
                   <TableRow key={ind}>
                     <TableCell>{ind}</TableCell>
-                    <TableCell>{user.date}</TableCell>
+                    <TableCell>{user.price}</TableCell>
                     <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.rating}</TableCell>
+                    <TableCell>{user.VegORnot}</TableCell>
+                    <TableCell>{user.Seller[0].name}</TableCell>
+                    <TableCell>{user.Seller[0].shop_name}</TableCell>
+                    <TableCell>
+                    {user.Addon.map((slip, i) => (  //added this bracket
+                                        <tr key={i}>
+                                          <td><Checkbox value={slip} id={ind} onChange={onChangeCheckbox}/></td>
+                                            <td>{slip.Item}</td>
+                                            <td>{slip.Price}</td>
+                                        </tr>
+                                    )
+                                    )}
+                    </TableCell>
+                    <TableCell><Button value={user._id} onClick={AddFavour}><StarIcon/></Button></TableCell>
                   </TableRow>
                 ))}
               </TableBody>

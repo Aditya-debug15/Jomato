@@ -192,5 +192,17 @@ router.get("/listitems",function (req, res) {
     )
 })
 
+router.post("/addfavourite",function(req,res){
+    User.updateOne({email:req.body.email},{$addToSet:{Favourite:req.body.Favourite}},(err,user)=>{
+        if (err) {
+            console.log(err);
+            res.json({ status: "Failed" });
+        }
+        else {
+            res.json({ status: "Success", newvalues: user });
+        }
+    })
+})
+
 module.exports = router;
 

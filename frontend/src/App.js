@@ -65,7 +65,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="users" element={<UsersList />} />
             <Route path="register" element={<CreateUser />} />
             <Route path="login" element={<Login />} />
             <Route path="profile" element={<Profile />} />
@@ -98,6 +97,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="/" element={<Home />} />
+              <Route path="users" element={<UsersList />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/editprofile" element={<Useredit />} />
               <Route path="/wallet" element={<Wallet />} />
