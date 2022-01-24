@@ -7,7 +7,7 @@ const Vendor = require("../models/Vendor");
 const Item = require("../models/Food_Item");
 
 router.post("/additem", (req, res) => {
-    Vendor.find({ email: req.body.email }, { _id: 1 }, (err, vendors) => {
+    Vendor.find({ email: req.body.email }, { _id: 1 ,shop_name:1}, (err, vendors) => {
         if (err) {
             console.log(err);
             res.json({ status: "Failed" });
@@ -16,6 +16,7 @@ router.post("/additem", (req, res) => {
             const newItem = new Item({
                 name: req.body.name,
                 Creator: vendors[0]["_id"],
+                shop_name:vendors[0]["shop_name"],
                 price: req.body.price,
                 VegORnot: req.body.VegORnot,
                 tags: req.body.tags,

@@ -17,6 +17,7 @@ import AddItem from "./components/Vendors/Add_item";
 import UserProfile from "./components/users/UserProfile";
 import Useredit from "./components/users/useredit";
 import Wallet from "./components/users/wallet";
+import Triallist from "./components/users/trial"
 let logged = localStorage.getItem('loggedin');
 
 const Layout = () => {
@@ -97,7 +98,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="/" element={<Home />} />
-              <Route path="users" element={<UsersList />} />
+              <Route path="/users" element={<UsersList />} />
+              <Route path="/trial" element={<Triallist />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/editprofile" element={<Useredit />} />
               <Route path="/wallet" element={<Wallet />} />

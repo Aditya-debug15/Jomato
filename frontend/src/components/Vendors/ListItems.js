@@ -8,6 +8,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Button } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
 const EditItem = (props) => {
     const [details, setDetails] = useState([]);
 
@@ -38,12 +41,11 @@ const EditItem = (props) => {
         console.log(newUser);
         axios
             .post("http://localhost:4000/vendor/removeitem", newUser)
-            .then((response) =>{
-                if(response.data.status === "Success")
-                {
+            .then((response) => {
+                if (response.data.status === "Success") {
                     window.location.reload()
                 }
-                else{
+                else {
                     console.log("error 1")
                 }
             })
@@ -53,7 +55,7 @@ const EditItem = (props) => {
     }
     const onEdit = (event) => {
         event.preventDefault();
-        localStorage.setItem('item_name',event.target.value);
+        localStorage.setItem('item_name', event.target.value);
         window.location.href = "/edititem";
     }
     return (
@@ -69,6 +71,7 @@ const EditItem = (props) => {
                             <TableCell>ratings</TableCell>
                             <TableCell>VEG / NONVEG</TableCell>
                             <TableCell>Addons</TableCell>
+                            <TableCell>Functionality</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -103,15 +106,15 @@ const EditItem = (props) => {
                                 </TableCell>
                                 <TableCell>
                                     <ul>
-                                    <li><button variant="contained" onClick={onEdit} value={row.name} >Edit</button></li>
-                                    <li><button variant="contained" onClick={onSubmit} value={row.name} >Remove</button></li>
-                                    </ul>
-                                </TableCell>
+                                        <li><Button variant="contained" onClick={onEdit} value={row.name} size="small" startIcon={<SendIcon />} >Edit</Button></li>
+                                        <li><Button variant="outlined" onClick={onSubmit} value={row.name} size="small" startIcon={<DeleteIcon />}>Delete</Button></li>
+                                </ul>
+                            </TableCell>
                             </TableRow>
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                </TableBody>
+            </Table>
+        </TableContainer>
         </>
     );
 };

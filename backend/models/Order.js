@@ -6,29 +6,33 @@ const OrderSchema = new Schema({
         type: String,
         required: true
     },
-    quantity:{
+    quantity: {
         type: Number,
         required: true
     },
     buyer: {
-        type:String,
+        type: String,
         required: true
     },
-    seller:{
+    seller: {
         type: Schema.Types.ObjectId,
         ref: "Vendor",
         required: true,
     },
-    price:{
-        type:Number,
-        required:true
+    price: {
+        type: Number,
+        required: true
     },
-    status:{
-        type:String,
-        default:"Pending"
+    placed_time: {
+        type: String, 
+        required: true 
     },
-    Addon:{
-        type: [{Item:String,Price:Number}]
+    status: {
+        type: String,
+        default: "Placed"
+    },
+    Addon: {
+        type: [{ Item: String, Price: Number }]
     }
 });
 

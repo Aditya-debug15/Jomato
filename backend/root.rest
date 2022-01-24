@@ -136,3 +136,14 @@ Content-Type: application/json
     "quantity": 2,
     "Addon":[{"Item": "double cheese", "Price": "20"},{"Item": "extra bread", "Price": "5"}]
 }
+
+###
+GET http://localhost:4000/user/allorders
+
+###
+POST http://localhost:4000/user/getfavourite
+Content-Type: application/json
+
+{
+    "email":"mayank@gmail.com"
+}

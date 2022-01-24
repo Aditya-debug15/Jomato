@@ -43,7 +43,7 @@ const UserNavbar = () => {
           <Button color="inherit" onClick={() => navigate("/editprofile")}>
             Edit Profile
           </Button>
-          <Button color="inherit" onClick={() => navigate("/ordernow")}>
+          <Button color="inherit" onClick={() => navigate("/users")}>
             Order
           </Button>
           <Button color="inherit" onClick={() => navigate("/favourites")}>

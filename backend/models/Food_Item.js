@@ -16,6 +16,10 @@ const FoodSchema = new Schema({
         ref: "Vendor",
         required: true,
     },
+    shop_name:{
+        type:String,
+        required:true
+    },
     rating: {
         type: Number,
         default: 0

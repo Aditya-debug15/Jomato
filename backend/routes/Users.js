@@ -205,6 +205,27 @@ router.post("/addfavourite",function(req,res){
     })
 })
 
+router.post("/getfavourite",function(req,res){
+    User.aggregate(
+        [{
+            $lookup:{
+                from: "food_items",
+                localField : "Favourite",
+                foreignField : "_id",
+                as : "user_favour"
+            }
+        }],(err,items) =>{
+            if(err){
+                console.log(err);
+                res.json({status:"Failed"});
+            }
+            else{
+                res.json(items);
+            }
+        }
+    )
+})
+
 router.post("/order",function(req,res){
     User.find({email:req.body.buyer},{wallet:1},(err,users) =>{
         if(err){
@@ -213,7 +234,7 @@ router.post("/order",function(req,res){
         }
         else{
             let wallet = users[0]["wallet"]
-            if(Number(wallet)>=req.body.price)
+            if(Number(wallet)>=req.body.price && Number(req.body.quantity)>0)
             {
                 wallet = Number(wallet) - req.body.price
                 const newOrder = new Order({
@@ -222,7 +243,8 @@ router.post("/order",function(req,res){
                     price: req.body.price,
                     seller: req.body.seller,
                     Addon: req.body.Addon,
-                    quantity: req.body.quantity
+                    quantity: req.body.quantity,
+                    placed_time : req.body.placed_time
                 });
                 newOrder.save()
                     .then(variable =>{
@@ -253,8 +275,26 @@ router.post("/order",function(req,res){
                     })
             }
             else{
-                res.json({status:"Failed",message:"Insufficient ballance"});
+                if(Number(req.body.quantity)<=0)
+                {
+
+                    res.json({status:"Failed",message:"Quantity needs to be a positive integer "});
+                }
+                else{
+
+                    res.json({status:"Failed",message:"Insufficient ballance "});
+                }
             }
+        }
+    })
+})
+
+router.get("/allorders",function(req,res){
+    Order.find(function (err, users) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(users);
         }
     })
 })
