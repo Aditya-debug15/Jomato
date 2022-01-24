@@ -2,37 +2,30 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 // Create Schema
 const OrderSchema = new Schema({
-    Item: {
-        type: Schema.Types.ObjectId,
-        ref: "Food_Items",
+    item_name: {
+        type: String,
         required: true
     },
-    Quantity:{
+    quantity:{
         type: Number,
-        default: 1
-    },
-    Buyer: {
-        type: Schema.Types.ObjectId,
-        ref: "Food_Items",
         required: true
     },
-    Creator:{
+    buyer: {
+        type:String,
+        required: true
+    },
+    seller:{
         type: Schema.Types.ObjectId,
         ref: "Vendor",
         required: true,
     },
-    rating: {
-        type: Number,
-        required: true,
-        default: 0
+    price:{
+        type:Number,
+        required:true
     },
-    VegORnot:{
-        type: String,
-        enum: ["Veg","Non Veg"],
-        required: true
-    },
-    tags:{
-        type: [String]
+    status:{
+        type:String,
+        default:"Pending"
     },
     Addon:{
         type: [{Item:String,Price:Number}]

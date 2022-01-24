@@ -15,24 +15,25 @@ router.post("/additem", (req, res) => {
         else {
             const newItem = new Item({
                 name: req.body.name,
-                Creator :vendors[0]["_id"],
+                Creator: vendors[0]["_id"],
                 price: req.body.price,
                 VegORnot: req.body.VegORnot,
                 tags: req.body.tags,
                 Addon: req.body.Addon
             });
-            Item.findOne({ name: req.body.name }).then(item => {
+            Item.findOne({ name: req.body.name, Creator: vendors[0]["_id"] }).then(item => {
                 if (!item) {
                     newItem.save()
                         .then(user => {
-                            res.json({status:"Success"});
+                            res.json({ status: "Success" });
                         })
                         .catch(err => {
-                            res.json({status:"Failed"});
+                            res.json({ status: "Failed" });
                         });
                 }
                 else {
-                    return res.json({ error: "Item already exist", status:"Failed"
+                    return res.json({
+                        error: "Item already exist", status: "Failed"
                     });
                 }
             })
@@ -94,12 +95,12 @@ router.post("/editgetitem", (req, res) => {
         else {
             const id = vendors[0]["_id"];
             var myquery = { $and: [{ Creator: id }, { name: req.body.name }] };
-            Item.find(myquery,(err,items) =>{
-                if(err){
+            Item.find(myquery, (err, items) => {
+                if (err) {
                     console.log(err);
                     res.json({ status: "Failed" });
                 }
-                else{
+                else {
                     res.json(items);
                 }
             })
@@ -124,7 +125,7 @@ router.post("/edititem", (req, res) => {
                     res.json({ status: "Failed" });
                 }
                 else {
-                    res.json({status: "Success", items: items});
+                    res.json({ status: "Success", items: items });
                 }
             })
         }

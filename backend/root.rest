@@ -41,14 +41,11 @@ POST http://localhost:4000/vendor/additem
 Content-Type: application/json
 
 {
-    "name":"Orange Juice",
+    "name":"maggi",
     "price": 15,
-    "email": "g",
+    "email": "shreyash@gmail.com",
     "VegORnot": "Non Veg",
-    "tags": ["hot","peri peri"],
-    "rating":2,
-    "rated_order":1,
-    "orders":2
+    "tags": ["hot","peri peri"]
 }
 
 ###
@@ -125,4 +122,17 @@ Content-Type: application/json
 {
     "email":"mayank@gmail.com",
     "Favourite":"61eacfc99550f00142b8a978"
+}
+
+###
+POST http://localhost:4000/user/order
+Content-Type: application/json
+
+{
+    "buyer": "mayank@gmail.com", 
+    "item_name": "omellete", 
+    "price": 150, 
+    "seller": "61eac67d67249800e944fa4f",
+    "quantity": 2,
+    "Addon":[{"Item": "double cheese", "Price": "20"},{"Item": "extra bread", "Price": "5"}]
 }

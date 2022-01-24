@@ -5,6 +5,7 @@ var router = express.Router();
 const User = require("../models/Users");
 const Vendor = require("../models/Vendor");
 const Items = require("../models/Food_Item");
+const Order = require("../models/Order");
 // GET request 
 // Getting all the users
 router.get("/", function (req, res) {
@@ -200,6 +201,60 @@ router.post("/addfavourite",function(req,res){
         }
         else {
             res.json({ status: "Success", newvalues: user });
+        }
+    })
+})
+
+router.post("/order",function(req,res){
+    User.find({email:req.body.buyer},{wallet:1},(err,users) =>{
+        if(err){
+            console.log(err);
+            res.json({status:"Failed",message:"Database Failure"})
+        }
+        else{
+            let wallet = users[0]["wallet"]
+            if(Number(wallet)>=req.body.price)
+            {
+                wallet = Number(wallet) - req.body.price
+                const newOrder = new Order({
+                    buyer: req.body.buyer,
+                    item_name: req.body.item_name,
+                    price: req.body.price,
+                    seller: req.body.seller,
+                    Addon: req.body.Addon,
+                    quantity: req.body.quantity
+                });
+                newOrder.save()
+                    .then(variable =>{
+                        var myquery = { email: req.body.buyer };
+                        var newvalues = { $set: { wallet: wallet} };
+                        User.updateOne(myquery, newvalues, (err, variable2) => {
+                            if (err) {
+                                console.log(err);
+                                res.json({ status: "Failed" });
+                            }
+                            else {
+                                var myquery2 = { $and: [{ Creator: req.body.seller }, { name: req.body.item_name }] };
+                                var newvalues2 = { $inc: { orders: 1} };
+                                Items.updateOne(myquery2, newvalues2, (err, variable2) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.json({ status: "Failed" });
+                                    }
+                                    else {
+                                        res.json({ status: "Success",newvalues:newvalues ,newvalues2: newvalues2 });
+                                    }
+                                })
+                            }
+                        })
+                    })
+                    .catch(err =>{
+                        res.json({status:"Failed",error:err})
+                    })
+            }
+            else{
+                res.json({status:"Failed",message:"Insufficient ballance"});
+            }
         }
     })
 })

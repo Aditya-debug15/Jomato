@@ -19,14 +19,45 @@ import StarIcon from '@mui/icons-material/Star';
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Checkbox } from "@mui/material";
-
 const UsersList = (props) => {
   const [users, setUsers] = useState([]);
   const [sortedUsers, setSortedUsers] = useState([]);
   const [sortName, setSortName] = useState(true);
   const [sortName2, setSortName2] = useState(true);
   const [searchText, setSearchText] = useState("");
+  const [open, setOpen] = useState(false);
+  const [quantity, setquantity] = useState(0);
+  const [price, setprice] = useState(0);
+  const [ID, setID] = useState("");
+  const [sellerID, setsellerID] = useState("");
+  const [itemname, setitemname] = useState("");
+  const [AddonArray2, setAddonArray2] = useState([]);
+  let AddonArray = [];
+  const handleClickOpen = (event) => {
+    setOpen(true);
+    let temp_Array = event.target.value.split(",")
+    console.log(temp_Array[1])
+    setprice(temp_Array[1])
+    setID(String(temp_Array[0]))
+    setsellerID(String(temp_Array[3]))
+    setitemname(String(temp_Array[2]))
+    console.log(ID)
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setquantity(0);
+    setprice(0);
+    setID("");
+    setsellerID("")
+    setitemname("")
+  };
 
   useEffect(() => {
     axios
@@ -40,6 +71,10 @@ const UsersList = (props) => {
         console.log(error);
       });
   }, []);
+
+  const onChangequantity = (event) => {
+    setquantity(event.target.value)
+  }
 
   const sortChange = () => {
     let usersTemp = users;
@@ -67,39 +102,102 @@ const UsersList = (props) => {
     setUsers(usersTemp);
     setSortName2(!sortName2);
   };
-  const AddFavour = (event) =>{
+  const AddFavour = (event) => {
     const NewFavour = {
-      "email":localStorage.getItem('email'),
-      "Favourite":event.target.value
+      "email": localStorage.getItem('email'),
+      "Favourite": event.target.value
     }
     console.log(NewFavour)
     axios
-    .post("http://localhost:4000/user/addfavourite",NewFavour)
-    .then((response) => {
-      if(response.data.status === "Success")
-      {
-        if(response.data.newvalues.nModified == 0)
-        {
-          alert("Already in the list")
-        }
-        else{
+      .post("http://localhost:4000/user/addfavourite", NewFavour)
+      .then((response) => {
+        if (response.data.status === "Success") {
+          if (response.data.newvalues.nModified == 0) {
+            alert("Already in the list")
+          }
+          else {
             alert("Added !!")
+          }
         }
-      }
-    })
-    .catch(function (error) {
+      })
+      .catch(function (error) {
         console.log(error);
-    });
+      });
   }
   const customFunction = (event) => {
     console.log(event.target.value);
     setSearchText(event.target.value);
   };
 
-  var AddonArray = []
-
+  const PrepareOrder = (event) => {
+    let Amount = 0;
+    console.log(ID)
+    Amount += Number(price);
+    let second_array = [];
+    console.log(AddonArray2.length);
+    for (let i = 0; i < AddonArray2.length; i++) {
+      console.log({ a: AddonArray2[i][0], b: ID });
+      if (AddonArray2[i][0] === ID) {
+        Amount += Number(AddonArray2[i][1][1])
+        second_array.push(AddonArray2[i][1])
+      }
+    }
+    let output = [];
+    {
+      let i, len
+      for (i = 0, len = second_array.length; i < len; i++) {
+        const newAddon = {
+          Item: second_array[i][0],
+          Price: second_array[i][1]
+        }
+        output.push(newAddon)
+      }
+    }
+    Amount *= Number(quantity)
+    const newOrder = {
+      buyer: localStorage.getItem('email'),
+      item_name: itemname,
+      price: Amount,
+      seller: sellerID,
+      Addon: output,
+      quantity: Number(quantity),
+    };
+    console.log(newOrder)
+    axios
+      .post("http://localhost:4000/user/order", newOrder)
+      .then((response) => {
+        if (response.data.status === "Success") {
+          alert("Success")
+        }
+        else{
+          alert(response.data.message)
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    setquantity(0)
+    setOpen(false)
+    setprice(0)
+    setID("")
+    setsellerID("")
+    setitemname("")
+    //console.log(event.target.id)
+  }
   const onChangeCheckbox = (event) => {
-
+    // console.log(event)
+    // console.log(event.target.checked)
+    // console.log(event.target.id)
+    console.log(event.target.value)
+    if (event.target.checked) {
+      AddonArray.push([event.target.id, event.target.value.split(",")]);
+    }
+    else {
+      AddonArray.splice(AddonArray.indexOf([event.target.id, event.target.value.split(",")]), 1);
+    }
+    // console.table(AddonArray[0][0])
+    // console.table(AddonArray[0][1][0])
+    // console.table(AddonArray[0][1][1])
   }
 
   return (
@@ -211,16 +309,41 @@ const UsersList = (props) => {
                     <TableCell>{user.Seller[0].name}</TableCell>
                     <TableCell>{user.Seller[0].shop_name}</TableCell>
                     <TableCell>
-                    {user.Addon.map((slip, i) => (  //added this bracket
-                                        <tr key={i}>
-                                          <td><Checkbox value={slip} id={ind} onChange={onChangeCheckbox}/></td>
-                                            <td>{slip.Item}</td>
-                                            <td>{slip.Price}</td>
-                                        </tr>
-                                    )
-                                    )}
+                      {user.Addon.map((slip, i) => (  //added this bracket
+                        <tr key={i}>
+                          <td><Checkbox value={[slip.Item, slip.Price]} id={user._id} onChange={onChangeCheckbox} /></td>
+                          <td>{slip.Item}</td>
+                          <td>{slip.Price}</td>
+                        </tr>
+                      )
+                      )}
                     </TableCell>
-                    <TableCell><Button value={user._id} onClick={AddFavour}><StarIcon/></Button></TableCell>
+                    <TableCell><Button value={[user._id, user.price, user.name, user.Seller[0]._id]} onClick={(e) => { setAddonArray2(AddonArray); handleClickOpen(e); }}>Order</Button>
+                      <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Enter Quantity</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            Enter Quantity
+                          </DialogContentText>
+                          <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Email Address"
+                            type="email"
+                            fullWidth
+                            variant="standard"
+                            value={quantity}
+                            onChange={onChangequantity}
+                          />
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleClose}>Cancel</Button>
+                          <Button onClick={PrepareOrder}>Order</Button>
+                        </DialogActions>
+                      </Dialog>
+                    </TableCell>
+                    <TableCell><Button value={user._id} onClick={AddFavour}><StarIcon /></Button></TableCell>
                   </TableRow>
                 ))}
               </TableBody>

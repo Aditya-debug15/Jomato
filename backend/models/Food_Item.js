@@ -28,6 +28,14 @@ const FoodSchema = new Schema({
         type: Number,
         default: 0
     },
+    completed_orders :{
+        type:Number,
+        default:0
+    },
+    rejected_orders :{
+        type:Number,
+        default:0
+    },
     VegORnot: {
         type: String,
         enum: ["Veg", "Non Veg"],

@@ -70,7 +70,7 @@ const AddItem = (props) => {
                     alert("Sucess ");
                 }
                 else {
-                    alert("invalid data")
+                    alert(res.data.error)
                 }
             });
         resetInputs();
