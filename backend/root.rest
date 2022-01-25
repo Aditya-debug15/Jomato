@@ -69,14 +69,6 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:4000/vendor/editgetprofile
-Content-Type: application/json
-
-{
-    "email":"g"
-}
-
-###
 POST http://localhost:4000/vendor/edititem
 Content-Type: application/json
 
@@ -142,6 +134,81 @@ GET http://localhost:4000/user/allorders
 
 ###
 POST http://localhost:4000/user/getfavourite
+Content-Type: application/json
+
+{
+    "email":"sk@gmail.com"
+}
+
+###
+POST http://localhost:4000/vendor/showorder
+Content-Type: application/json
+
+{
+    "email":"g"
+}
+
+###
+POST http://localhost:4000/vendor/changestatus
+Content-Type: application/json
+
+{
+    "id":"61ee8f452eb4ef04bce39bd2",
+    "status":"Placed"
+}
+
+###
+POST http://localhost:4000/vendor/incCurrentOrder
+Content-Type: application/json
+
+{
+    "email":"karman@gmail.com"
+}
+
+###
+POST http://localhost:4000/vendor/decCurrentOrder
+Content-Type: application/json
+
+{
+    "email":"karman@gmail.com"
+}
+
+###
+POST http://localhost:4000/vendor/editgetprofile
+Content-Type: application/json
+
+{
+    "email":"karman@gmail.com"
+}
+
+###
+POST http://localhost:4000/user/getfavourite
+Content-Type: application/json
+
+{
+    "email":"sk@gmail.com"
+}
+
+###
+POST http://localhost:4000/user/changestatus
+Content-Type: application/json
+
+{
+    "id":"61f00c42f53e151627c2d628",
+    "status":"Ready For Pickup"
+}
+
+###
+POST http://localhost:4000/user/ratingchange
+Content-Type: application/json
+
+{
+    "id":"61effee14eb1110ddc872a9b",
+    "rating":3
+}
+
+###
+POST http://localhost:4000/user/showorder
 Content-Type: application/json
 
 {

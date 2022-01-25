@@ -5,9 +5,10 @@ var router = express.Router();
 const User = require("../models/Users");
 const Vendor = require("../models/Vendor");
 const Item = require("../models/Food_Item");
+const Order = require("../models/Order");
 
 router.post("/additem", (req, res) => {
-    Vendor.find({ email: req.body.email }, { _id: 1 ,shop_name:1}, (err, vendors) => {
+    Vendor.find({ email: req.body.email }, { _id: 1, shop_name: 1 }, (err, vendors) => {
         if (err) {
             console.log(err);
             res.json({ status: "Failed" });
@@ -16,7 +17,7 @@ router.post("/additem", (req, res) => {
             const newItem = new Item({
                 name: req.body.name,
                 Creator: vendors[0]["_id"],
-                shop_name:vendors[0]["shop_name"],
+                shop_name: vendors[0]["shop_name"],
                 price: req.body.price,
                 VegORnot: req.body.VegORnot,
                 tags: req.body.tags,
@@ -154,6 +155,101 @@ router.post("/removeitem", (req, res) => {
             })
         }
     })
+})
+
+router.post("/showorder", (req, res) => {
+    Vendor.find({ email: req.body.email }, { _id: 1 }, (err, vendors) => {
+        if (err) {
+            console.log(err);
+            res.json({ status: "Failed" });
+        }
+        else {
+            const id = vendors[0]["_id"];
+            //console.log(vendors[0]["_id"]);
+            var myquery = { seller: id };
+            Order.find(myquery, (err, items) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ status: "Failed" });
+                }
+                else {
+                    res.json({ status: "Success", items: items });
+                }
+            })
+        }
+    })
+})
+
+router.post("/changestatus", (req, res) => {
+    if (req.body.status === "Accepted") {
+        Vendor.find({ email: req.body.email }, { Current_order: 1 }, (err, vendors) => {
+            if (err) {
+                console.log(err);
+                res.json({ done: "Failed" });
+            }
+            else {
+                const Current_order = Number(vendors[0]["Current_order"]);
+                //console.log(vendors[0]["_id"]);
+                if (Current_order < 10) {
+                    Vendor.updateOne({ email: req.body.email }, { $inc: { Current_order: 1 } }, (err, items) => {
+                        if (err) {
+                            console.log(err);
+                            res.json({ done: "Failed", Msg: "Error occured" });
+                        }
+                        else {
+                            var newvalues = { $set: { status: req.body.status } };
+                            Order.updateOne({ _id: req.body.id }, newvalues, (err, items) => {
+                                if (err) {
+                                    console.log(err);
+                                    res.json({ done: "Failed", Msg: "Error occured" });
+                                }
+                                else {
+                                    res.json({ done: "Success", items: items });
+                                }
+                            })
+                        }
+                    })
+                }
+                else {
+                    res.json({ done: "Failed", Msg: "Can't accept more orders" })
+                }
+            }
+        })
+    }
+    else {
+        if (req.body.status === "Ready For Pickup") {
+            Vendor.updateOne({ email: req.body.email }, { $inc: { Current_order: -1 } }, (err, items) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ done: "Failed", Msg: "Some  Error Occured " });
+                }
+                else {
+                    var newvalues = { $set: { status: req.body.status } };
+                    Order.updateOne({ _id: req.body.id }, newvalues, (err, items) => {
+                        if (err) {
+                            console.log(err);
+                            res.json({ done: "Failed", Msg: "Error Occured" });
+                        }
+                        else {
+                            res.json({ done: "Success", items: items });
+                        }
+                    })
+                }
+            })
+        }
+        else {
+            var newvalues = { $set: { status: req.body.status } };
+            Order.updateOne({ _id: req.body.id }, newvalues, (err, items) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ done: "Failed", Msg: "Error Occured" });
+                }
+                else {
+                    res.json({ done: "Success", items: items });
+                }
+            })
+        }
+    }
 })
 
 module.exports = router;

@@ -172,29 +172,29 @@ router.post("/wallet", (req, res) => {
     })
 })
 
-router.get("/listitems",function (req, res) {
+router.get("/listitems", function (req, res) {
     Items.aggregate(
         [{
-            $lookup:{
+            $lookup: {
                 from: "vendors",
-                localField : "Creator",
-                foreignField : "_id",
-                as : "Seller"
+                localField: "Creator",
+                foreignField: "_id",
+                as: "Seller"
             }
-        }],(err,items) =>{
-            if(err){
+        }], (err, items) => {
+            if (err) {
                 console.log(err);
-                res.json({status:"Failed"});
+                res.json({ status: "Failed" });
             }
-            else{
+            else {
                 res.json(items);
             }
         }
     )
 })
 
-router.post("/addfavourite",function(req,res){
-    User.updateOne({email:req.body.email},{$addToSet:{Favourite:req.body.Favourite}},(err,user)=>{
+router.post("/addfavourite", function (req, res) {
+    User.updateOne({ email: req.body.email }, { $addToSet: { Favourite: req.body.Favourite } }, (err, user) => {
         if (err) {
             console.log(err);
             res.json({ status: "Failed" });
@@ -205,37 +205,42 @@ router.post("/addfavourite",function(req,res){
     })
 })
 
-router.post("/getfavourite",function(req,res){
+router.post("/getfavourite", function (req, res) {
     User.aggregate(
-        [{
-            $lookup:{
-                from: "food_items",
-                localField : "Favourite",
-                foreignField : "_id",
-                as : "user_favour"
+        [
+            {
+                $match: {
+                    email: req.body.email
+                }
+            },
+            {
+                $lookup: {
+                    from: "food_items",
+                    localField: "Favourite",
+                    foreignField: "_id",
+                    as: "user_favour"
+                }
+            }], (err, items) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ status: "Failed" });
+                }
+                else {
+                    res.json(items);
+                }
             }
-        }],(err,items) =>{
-            if(err){
-                console.log(err);
-                res.json({status:"Failed"});
-            }
-            else{
-                res.json(items);
-            }
-        }
     )
 })
 
-router.post("/order",function(req,res){
-    User.find({email:req.body.buyer},{wallet:1},(err,users) =>{
-        if(err){
+router.post("/order", function (req, res) {
+    User.find({ email: req.body.buyer }, { wallet: 1 }, (err, users) => {
+        if (err) {
             console.log(err);
-            res.json({status:"Failed",message:"Database Failure"})
+            res.json({ status: "Failed", message: "Database Failure" })
         }
-        else{
+        else {
             let wallet = users[0]["wallet"]
-            if(Number(wallet)>=req.body.price && Number(req.body.quantity)>0)
-            {
+            if (Number(wallet) >= req.body.price && Number(req.body.quantity) > 0) {
                 wallet = Number(wallet) - req.body.price
                 const newOrder = new Order({
                     buyer: req.body.buyer,
@@ -244,12 +249,12 @@ router.post("/order",function(req,res){
                     seller: req.body.seller,
                     Addon: req.body.Addon,
                     quantity: req.body.quantity,
-                    placed_time : req.body.placed_time
+                    placed_time: req.body.placed_time
                 });
                 newOrder.save()
-                    .then(variable =>{
+                    .then(variable => {
                         var myquery = { email: req.body.buyer };
-                        var newvalues = { $set: { wallet: wallet} };
+                        var newvalues = { $set: { wallet: wallet } };
                         User.updateOne(myquery, newvalues, (err, variable2) => {
                             if (err) {
                                 console.log(err);
@@ -257,44 +262,140 @@ router.post("/order",function(req,res){
                             }
                             else {
                                 var myquery2 = { $and: [{ Creator: req.body.seller }, { name: req.body.item_name }] };
-                                var newvalues2 = { $inc: { orders: 1} };
+                                var newvalues2 = { $inc: { orders: 1 } };
                                 Items.updateOne(myquery2, newvalues2, (err, variable2) => {
                                     if (err) {
                                         console.log(err);
                                         res.json({ status: "Failed" });
                                     }
                                     else {
-                                        res.json({ status: "Success",newvalues:newvalues ,newvalues2: newvalues2 });
+                                        res.json({ status: "Success", newvalues: newvalues, newvalues2: newvalues2 });
                                     }
                                 })
                             }
                         })
                     })
-                    .catch(err =>{
-                        res.json({status:"Failed",error:err})
+                    .catch(err => {
+                        res.json({ status: "Failed", error: err })
                     })
             }
-            else{
-                if(Number(req.body.quantity)<=0)
-                {
+            else {
+                if (Number(req.body.quantity) <= 0) {
 
-                    res.json({status:"Failed",message:"Quantity needs to be a positive integer "});
+                    res.json({ status: "Failed", message: "Quantity needs to be a positive integer " });
                 }
-                else{
+                else {
 
-                    res.json({status:"Failed",message:"Insufficient ballance "});
+                    res.json({ status: "Failed", message: "Insufficient ballance " });
                 }
             }
         }
     })
 })
 
-router.get("/allorders",function(req,res){
+router.get("/allorders", function (req, res) {
     Order.find(function (err, users) {
         if (err) {
             console.log(err);
         } else {
             res.json(users);
+        }
+    })
+})
+
+router.post("/showorder", (req, res) => {
+    //console.log(vendors[0]["_id"]);
+    // var myquery = { buyer: req.body.email };
+    // Order.find(myquery, (err, items) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.json({ status: "Failed" });
+    //     }
+    //     else {
+    //         res.json({ status: "Success", items: items });
+    //     }
+    // })
+    Order.aggregate(
+        [
+            {
+                $match: {
+                    buyer: req.body.email
+                }
+            },
+            {
+                $lookup: {
+                    from: "vendors",
+                    localField: "seller",
+                    foreignField: "_id",
+                    as: "seller_info"
+                }
+            }], (err, items) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ status: "Failed" });
+                }
+                else {
+                    res.json(items);
+                }
+            }
+    )
+})
+
+router.post("/changestatus", (req, res) => {
+    var newvalues = { $set: { status: req.body.status } };
+    Order.updateOne({ _id: req.body.id }, newvalues, (err, items) => {
+        if (err) {
+            console.log(err);
+            res.json({ done: "Failed", Msg: "Error occured" });
+        }
+        else {
+            res.json({ done: "Success", items: items });
+        }
+    })
+})
+
+router.post("/ratingchange", (req, res) => {
+    Order.findOne({ _id: req.body.id }, (err, var1) => {
+        if (err) {
+            console.log(err)
+            res.json({ done: "Failed", Msg: "Error Occured" })
+        }
+        else {
+            console.log(var1.item_name)
+            Items.findOne({ name: var1.item_name, Creator: var1.seller }, { rating: 1, rated_order: 1 }, (err1, var2) => {
+                if (err1) {
+                    console.log(err1)
+                    res.json({ done: "Failed", Msg: "Error Occured" })
+                }
+                else {
+                    console.log(var2)
+                    var pre_rating = Number(var2.rating)
+                    var pre_ratedorders = Number(var2.rated_order)
+                    pre_ratedorders += 1
+                    pre_rating += req.body.rating
+                    pre_rating /= pre_ratedorders
+                    const id = var2._id
+                    var newvalues = { $set: { rating: pre_rating, rated_order: pre_ratedorders } };
+                    Items.updateOne({ _id: id }, newvalues, (err2, var3) => {
+                        if (err2) {
+                            console.log(err2)
+                            res.json({ done: "Failed", Msg: "Error Occured" })
+                        }
+                        else {
+                            var newvalues2 = { $set: { rating: req.body.rating } };
+                            Order.updateOne({ _id: req.body.id }, newvalues2, (err3, var4) => {
+                                if (err3) {
+                                    console.log(err2)
+                                    res.json({ done: "Failed", Msg: "Error Occured" })
+                                }
+                                else {
+                                    res.json({ done: "Success", var4: var4 })
+                                }
+                            })
+                        }
+                    })
+                }
+            })
         }
     })
 })

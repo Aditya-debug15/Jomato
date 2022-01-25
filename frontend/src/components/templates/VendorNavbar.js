@@ -30,7 +30,7 @@ const VendorNavbar = () => {
           <Button color="inherit" onClick={() => navigate("/AddItem")}>
             Add Item
           </Button>
-          <Button color="inherit" onClick={() => navigate("/ViewOrder")}>
+          <Button color="inherit" onClick={() => navigate("/showorder")}>
             View Orders
           </Button>
           <Button color="inherit" onClick={() => navigate("/listitems")}>

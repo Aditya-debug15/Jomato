@@ -195,7 +195,7 @@ const Triallist = (props) => {
   const AddFavour = (event) => {
     const NewFavour = {
       "email": localStorage.getItem('email'),
-      "Favourite": event.target.value
+      "Favourite": event.target.id
     }
     console.log(NewFavour)
     axios
@@ -490,7 +490,7 @@ const Triallist = (props) => {
                           </DialogActions>
                         </Dialog>
                       </TableCell>
-                      <TableCell><Button value={user._id} onClick={AddFavour}><StarIcon /></Button></TableCell>
+                      <TableCell><Button id={user._id} onClick={(e) => { setAddonArray2(AddonArray); AddFavour(e); }}><StarIcon /></Button></TableCell>
                     </TableRow>
                   ) : null
                 ))}
@@ -540,7 +540,7 @@ const Triallist = (props) => {
                           </DialogActions>
                         </Dialog>
                       </TableCell>
-                      <TableCell><Button value={user._id} onClick={AddFavour}><StarIcon /></Button></TableCell>
+                      <TableCell><Button id={user._id} onClick={(e) => { setAddonArray2(AddonArray); AddFavour(e); }}><StarIcon /></Button></TableCell>
                     </TableRow>
                   ) : null
                 ))}

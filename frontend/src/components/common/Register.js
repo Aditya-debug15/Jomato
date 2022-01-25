@@ -97,6 +97,7 @@ export default class CreateUser extends Component {
         axios.post('http://localhost:4000/user/register', newUser)
             .then(res => {
                 console.log(res.data)
+                alert("Success")
             })
             .catch(err => {
                 console.log(err)
@@ -106,7 +107,8 @@ export default class CreateUser extends Component {
         this.setState({
             email: '',
             Password: '',
-            usertype: ''
+            usertype: '',
+            name: '',
         });
     }
 

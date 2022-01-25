@@ -44,7 +44,10 @@ const UserNavbar = () => {
             Edit Profile
           </Button>
           <Button color="inherit" onClick={() => navigate("/users")}>
-            Order
+            Order Now
+          </Button>
+          <Button color="inherit" onClick={() => navigate("/showorder")}>
+            View Orders
           </Button>
           <Button color="inherit" onClick={() => navigate("/favourites")}>
             Favourites

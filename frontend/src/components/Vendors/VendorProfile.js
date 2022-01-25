@@ -28,6 +28,7 @@ const VendorProfile = (props) => {
                     createData('Shop Name', response.data[0].shop_name),
                     createData('Opening Time', response.data[0].OpenTime),
                     createData('Closing Time', response.data[0].CloseTime),
+                    createData('Current Orders', response.data[0].Current_order),
                 ]);
             })
             .catch(function (error) {

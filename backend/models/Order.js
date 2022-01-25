@@ -31,6 +31,10 @@ const OrderSchema = new Schema({
         type: String,
         default: "Placed"
     },
+    rating:{
+        type: Number,
+        default:0
+    },
     Addon: {
         type: [{ Item: String, Price: Number }]
     }
