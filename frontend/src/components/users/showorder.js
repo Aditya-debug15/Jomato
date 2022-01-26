@@ -162,14 +162,14 @@ const ListOrder = (props) => {
                                                         Rate
                                                     </Button>
                                                         <Dialog open={open} onClose={handleClose}>
-                                                            <DialogTitle>Rate</DialogTitle>
+                                                            <DialogTitle>Rating</DialogTitle>
                                                             <DialogContent>
                                                                 <DialogContentText>
                                                                     Rate this food item
                                                                 </DialogContentText>
                                                                 <Box sx={{ minWidth: 120 }}>
                                                                     <FormControl fullWidth>
-                                                                        <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                                                                        <InputLabel id="demo-simple-select-label">Rating</InputLabel>
                                                                         <Select
                                                                             labelId="demo-simple-select-label"
                                                                             id="demo-simple-select"

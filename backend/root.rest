@@ -145,7 +145,7 @@ POST http://localhost:4000/vendor/showorder
 Content-Type: application/json
 
 {
-    "email":"g"
+    "email":"gautam@gmail.com"
 }
 
 ###
@@ -213,4 +213,29 @@ Content-Type: application/json
 
 {
     "email":"mayank@gmail.com"
+}
+
+###
+POST http://localhost:4000/vendor/rejectstatus
+Content-Type: application/json
+
+{
+    "id":"61f00c42f53e151627c2d628",
+    "wallet":30
+}
+
+###
+POST http://localhost:4000/vendor/topfive
+Content-Type: application/json
+
+{
+    "email":"joshi@gmail.com"
+}
+
+###
+POST http://localhost:4000/vendor/order_count
+Content-Type: application/json
+
+{
+    "email":"karman@gmail.com"
 }

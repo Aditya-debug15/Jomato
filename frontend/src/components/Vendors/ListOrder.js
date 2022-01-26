@@ -79,11 +79,11 @@ const ShowOrder = (props) => {
         console.log(event.target.value)
         const newUser = {
             id: event.target.id,
-            status: "Rejected"
+            wallet: event.target.value
         };
         console.log(newUser);
         axios
-            .post("http://localhost:4000/vendor/changestatus", newUser)
+            .post("http://localhost:4000/vendor/rejectstatus", newUser)
             .then((response) => {
                 if (response.data.done === "Success") {
                     window.location.reload()
@@ -150,7 +150,7 @@ const ShowOrder = (props) => {
                                         (row.status).localeCompare("Placed") === 0 ? (
                                             <ul>
                                                 <li><Button variant="contained" value={row.status} id={row._id} onClick={ ChnageStatus} size="small" startIcon={<SendIcon />} >Accept</Button></li>
-                                                <li><Button variant="outlined" value={row.status} id={row._id} onClick={RejectStatus} size="small" startIcon={<DeleteIcon />}>Reject</Button></li>
+                                                <li><Button variant="outlined" value={row.price} id={row._id} onClick={RejectStatus} size="small" startIcon={<DeleteIcon />}>Reject</Button></li>
                                             </ul>
                                         ) : (
                                             (row.status).localeCompare("Rejected") === 0 ? (

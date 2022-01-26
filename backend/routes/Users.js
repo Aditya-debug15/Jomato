@@ -349,7 +349,23 @@ router.post("/changestatus", (req, res) => {
             res.json({ done: "Failed", Msg: "Error occured" });
         }
         else {
-            res.json({ done: "Success", items: items });
+            Order.findOne({ _id: req.body.id }, (err, var1) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ done: "Failed", Msg: "Error occured" });
+                }
+                else {
+                    Items.updateOne({ name: var1.item_name, Creator: var1.seller }, { $inc:{completed_orders:1}}, (err1, var2) => {
+                        if (err1) {
+                            console.log(err1)
+                            res.json({ done: "Failed", Msg: "Error Occured" })
+                        }
+                        else {
+                            res.json({done:"Success"})
+                        }
+                    })
+                }
+            })
         }
     })
 })

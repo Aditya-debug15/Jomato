@@ -19,7 +19,9 @@ import Useredit from "./components/users/useredit";
 import Wallet from "./components/users/wallet";
 import Triallist from "./components/users/trial"
 import ShowOrder from "./components/Vendors/ListOrder";
-import ListOrder from "./components/users/showorder"
+import ListOrder from "./components/users/showorder";
+import Stats from "./components/Vendors/Statistics"
+import Statistics from "./components/Vendors/Statistics";
 let logged = localStorage.getItem('loggedin');
 
 const Layout = () => {
@@ -90,6 +92,7 @@ function App() {
               <Route path="/edititem" element={<EditItem />} />
               <Route path="/additem" element={<AddItem />} />
               <Route path="/showorder" element={<ShowOrder />} />
+              <Route path="/stats" element={<Statistics />} />
               </Route>
           </Routes >
         </BrowserRouter>

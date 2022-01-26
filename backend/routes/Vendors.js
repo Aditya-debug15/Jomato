@@ -252,4 +252,108 @@ router.post("/changestatus", (req, res) => {
     }
 })
 
+router.post("/rejectstatus", (req, res) => {
+    Order.findById(req.body.id, (err, var1) => {
+        if (err) {
+            console.log(err);
+            res.json({ done: "Failed", Msg: "Error Occured" });
+        }
+        else {
+            const email = var1["buyer"]
+            const item_name = var1["item_name"]
+            const Creator = var1["seller"]
+
+            User.updateOne({ email: email }, { $inc: { wallet: req.body.wallet } }, (err1, var2) => {
+                if (err1) {
+                    console.log(err1)
+                    res.json({ done: "Failed", Msg: "Error Occured" });
+                }
+                else {
+                    var newvalues = { $set: { status: "Rejected" } };
+                    Order.updateOne({ _id: req.body.id }, newvalues, (err, items) => {
+                        if (err) {
+                            console.log(err);
+                            res.json({ done: "Failed", Msg: "Error Occured" });
+                        }
+                        else {
+                            Item.updateOne({ name: var1.item_name, Creator: var1.seller }, { $inc: { rejected_orders: 1 } }, (err1, var2) => {
+                                if (err1) {
+                                    console.log(err1)
+                                    res.json({ done: "Failed", Msg: "Error Occured" })
+                                }
+                                else {
+                                    res.json({ done: "Success" })
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    })
+})
+
+
+router.post("/topfive", (req, res) => {
+    Vendor.findOne({ email: req.body.email }, { _id: 1 }).then(vendor => {
+        if (!vendor) {
+            console.log("Wrong email")
+            res.json({ status: "Failed" })
+        }
+        else {
+            const id = vendor["_id"]
+            Item.find({ Creator: id }).sort({ orders: -1, rating: -1 }).limit(5).then(items => {
+                if (!items) {
+                    console.log("Wrong email")
+                    res.json({ status: "Failed" })
+                }
+                else {
+                    res.json({ status: "Success", items: items })
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
+
+    }).catch(err => {
+        console.log(err)
+    })
+})
+
+router.post("/order_count", (req, res) => {
+    Vendor.findOne({ email: req.body.email }, { _id: 1 }).then(vendor => {
+        if (!vendor) {
+            console.log("Wrong email")
+            res.json({ status: "Failed" })
+        }
+        else {
+            const id = vendor["_id"]
+            Item.aggregate([
+                { $match: { Creator: id } },
+                {
+                    $group: {
+                        _id: { Creator: "$Creator" },
+                        orderTotal: { $sum: "$orders" },
+                        rejectTotal: { $sum: "$rejected_orders" },
+                        completeTotal: { $sum: "$completed_orders" }
+                    }
+                }
+            ]).then(items => {
+                if (!items) {
+                    console.log("Wrong email")
+                    res.json({ status: "Failed" })
+                }
+                else {
+                    res.json({ status: "Success", items: items })
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
+
+    }).catch(err => {
+        console.log(err)
+    })
+})
+
 module.exports = router;
