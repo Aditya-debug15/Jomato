@@ -11,9 +11,12 @@ import Paper from '@mui/material/Paper';
 import { Button } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
+import emailjs from '@emailjs/browser';
+import Rating from '@mui/material/Rating';
+import Typography from '@mui/material/Typography';
 const ShowOrder = (props) => {
     const [details, setDetails] = useState([]);
-
+    const [shop_name, setshop_name] = useState("");
     function createData(name, calories) {
         return { name, calories };
     }
@@ -25,34 +28,33 @@ const ShowOrder = (props) => {
             .post("http://localhost:4000/vendor/showorder", newuser)
             .then((response) => {
                 setDetails(response.data.items);
+                setshop_name(response.data.shop_name)
             })
             .catch(function (error) {
                 console.log(error);
             });
     }, []);
     const ChnageStatus = (event) => {
+        console.log(shop_name)
         event.preventDefault();
         console.log(event.target.id)
         console.log(event.target.value)
         var next_status;
-        if((event.target.value).localeCompare("Placed")===0)
-        {
+        if ((event.target.value).localeCompare("Placed") === 0) {
             next_status = "Accepted"
         }
-        else{
-            if((event.target.value).localeCompare("Accepted")===0)
-            {
-                next_status="Cooking"
+        else {
+            if ((event.target.value).localeCompare("Accepted") === 0) {
+                next_status = "Cooking"
             }
-            else{
-                if((event.target.value).localeCompare("Cooking")===0)
-                {
-                    next_status="Ready For Pickup"
+            else {
+                if ((event.target.value).localeCompare("Cooking") === 0) {
+                    next_status = "Ready For Pickup"
                 }
             }
         }
         const newUser = {
-            email:localStorage.getItem('email'),
+            email: localStorage.getItem('email'),
             id: event.target.id,
             status: next_status
         };
@@ -62,7 +64,44 @@ const ShowOrder = (props) => {
             .then((response) => {
                 if (response.data.done === "Success") {
                     alert("Success")
-                    window.location.reload()
+                    if (next_status === "Accepted") {
+                        let buyer;
+                        for (let index = 0; index < details.length; index++) {
+                            if (details[index]._id === event.target.id) {
+                                buyer = details[index].buyer
+                                break;
+                            }
+                        }
+                        console.log(buyer)
+                        // var form = {
+                        //     buyer: buyer,
+                        //     shop_name: shop_name,
+                        //     status: "Accepted",
+                        // };
+                        emailjs.send("service_lg4ccz8", "template_hno068a", {
+                            status: "Rejected",
+                            shop_name: shop_name,
+                            buyer: buyer,
+                        }, "user_VFqheCHMAXwwWYzw2BulN")
+                            .then((result) => {
+                                if (result.text === "OK") {
+                                    alert("Email sent order Accepted")
+                                    window.location.reload()
+                                }
+                                else {
+                                    console.log(result.text);
+                                    alert("error in email sending")
+                                    window.location.reload()
+                                }
+                            }, (error) => {
+                                alert("Error in email sending")
+                                window.location.reload()
+                                console.log(error.text);
+                            });
+                    }
+                    else{
+                        window.location.reload()
+                    }
                 }
                 else {
                     alert(response.data.Msg)
@@ -86,7 +125,41 @@ const ShowOrder = (props) => {
             .post("http://localhost:4000/vendor/rejectstatus", newUser)
             .then((response) => {
                 if (response.data.done === "Success") {
-                    window.location.reload()
+                    let buyer;
+                    for (let index = 0; index < details.length; index++) {
+                        if (details[index]._id === event.target.id) {
+                            buyer = details[index].buyer
+                            break;
+                        }
+                    }
+                    console.log(buyer)
+                    // var form = {
+                    //     buyer: buyer,
+                    //     shop_name: shop_name,
+                    //     status: "Accepted",
+                    // };
+                    emailjs.send("service_lg4ccz8", "template_hno068a", {
+                        status: "Rejected",
+                        shop_name: shop_name,
+                        buyer: buyer,
+                    }, "user_VFqheCHMAXwwWYzw2BulN")
+                        .then((result) => {
+                            if (result.text === "OK") {
+                                alert("Email sent order rejected")
+                                window.location.reload()
+                            }
+                            else {
+                                console.log(result.text);
+                                alert("error in email sending")
+                                window.location.reload()
+                            }
+                        }, (error) => {
+                            alert("Error in email sending")
+                            window.location.reload()
+                            console.log(error.text);
+                        });
+
+                    //window.location.reload()
                 }
                 else {
                     console.log("error 1")
@@ -95,6 +168,7 @@ const ShowOrder = (props) => {
             .catch(function (error) {
                 console.log(error);
             });
+
     }
     return (
         <>
@@ -149,7 +223,7 @@ const ShowOrder = (props) => {
                                     {
                                         (row.status).localeCompare("Placed") === 0 ? (
                                             <ul>
-                                                <li><Button variant="contained" value={row.status} id={row._id} onClick={ ChnageStatus} size="small" startIcon={<SendIcon />} >Accept</Button></li>
+                                                <li><Button variant="contained" value={row.status} id={row._id} onClick={ChnageStatus} size="small" startIcon={<SendIcon />} >Accept</Button></li>
                                                 <li><Button variant="outlined" value={row.price} id={row._id} onClick={RejectStatus} size="small" startIcon={<DeleteIcon />}>Reject</Button></li>
                                             </ul>
                                         ) : (
@@ -158,23 +232,29 @@ const ShowOrder = (props) => {
                                                     <li><Button variant="contained" disabled size="small" >Order Rejected</Button></li>
                                                 </ul>
                                             ) : (
-                                                (row.status).localeCompare("Completed") === 0 ? (
+                                                (row.status).localeCompare("Completed") === 0 && row.rating === 0 ? (
                                                     <ul>
                                                         <li><Button variant="contained" disabled size="small" >Order Completed</Button></li>
                                                     </ul>
-                                                ) : 
+                                                ) : ((row.status).localeCompare("Completed") === 0 && row.rating !== 0 ? (
+                                                    <ul>
+                                                        <Typography component="legend">Rated As</Typography>
+                                                        <Rating name="read-only" value={row.rating} readOnly />
+                                                    </ul>
+                                                ) :
 
-                                                (
-                                                    (row.status).localeCompare("Ready For Pickup") === 0 ? (
-                                                        <ul>
-                                                            <li><Button variant="contained" disabled size="small" >Waiting For Buyer</Button></li>
-                                                        </ul>
-                                                    ) : 
-                                                    
                                                     (
-                                                        <ul>
-                                                            <li><Button variant="outlined" value={row.status} id={row._id} onClick={ChnageStatus} size="small" startIcon={<SendIcon />}>Next Stage</Button></li>
-                                                        </ul>
+                                                        (row.status).localeCompare("Ready For Pickup") === 0 ? (
+                                                            <ul>
+                                                                <li><Button variant="contained" disabled size="small" >Waiting For Buyer</Button></li>
+                                                            </ul>
+                                                        ) :
+
+                                                            (
+                                                                <ul>
+                                                                    <li><Button variant="outlined" value={row.status} id={row._id} onClick={ChnageStatus} size="small" startIcon={<SendIcon />}>Next Stage</Button></li>
+                                                                </ul>
+                                                            )
                                                     )
                                                 )
                                             )

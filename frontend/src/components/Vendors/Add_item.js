@@ -3,14 +3,17 @@ import axios from "axios";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 const AddItem = (props) => {
     const [name, setname] = useState("");
     const [tags, settags] = useState([]);
     const [price, setprice] = useState(0);
     const [VegORnot, setVegORnot] = useState("");
     const [Addon, setAddon] = useState([]);
-    const [Names,setNames] = useState(" ");
+    const [Names, setNames] = useState(" ");
 
     const onChangename = (event) => {
         setname(event.target.value);
@@ -44,11 +47,11 @@ const AddItem = (props) => {
         console.log(names);
         let output = [];
         {
-            let i,len
-            for (i = 0, len = names.length; i < len; i+=2) {
-                const newAddon ={
+            let i, len
+            for (i = 0, len = names.length; i < len; i += 2) {
+                const newAddon = {
                     Item: names[i],
-                    Price:names[i+1]
+                    Price: names[i + 1]
                 }
                 output.push(newAddon)
             }
@@ -62,17 +65,19 @@ const AddItem = (props) => {
             VegORnot: VegORnot,
         };
         console.log(newUser);
-
-        axios
-            .post("http://localhost:4000/vendor/additem", newUser)
-            .then((res) => {
-                if (res.data.status === "Success") {
-                    alert("Sucess ");
-                }
-                else {
-                    alert(res.data.error)
-                }
-            });
+        if (price <= 0) { alert("Price needs to be positive") }
+        else {
+            axios
+                .post("http://localhost:4000/vendor/additem", newUser)
+                .then((res) => {
+                    if (res.data.status === "Success") {
+                        alert("Sucess ");
+                    }
+                    else {
+                        alert(res.data.error)
+                    }
+                });
+        }
         resetInputs();
     };
 
@@ -96,12 +101,20 @@ const AddItem = (props) => {
                 />
             </Grid>
             <Grid item xs={12}>
-                <TextField
-                    label="Enter either Veg or Non Veg"
-                    variant="outlined"
-                    value={VegORnot}
-                    onChange={onChangeVegORnot}
-                />
+                <FormControl sx={{ m: 1, width: 225 }}>
+                    <InputLabel id="demo-simple-select-label">Veg/Non Veg</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={VegORnot}
+                        defaultValue={""}
+                        label="Food Type"
+                        onChange={onChangeVegORnot}
+                    >
+                        <MenuItem value={"Veg"}>Veg</MenuItem>
+                        <MenuItem value={"Non Veg"}>Non Veg</MenuItem>
+                    </Select>
+                </FormControl>
             </Grid>
             <Grid item xs={12}>
                 <TextField

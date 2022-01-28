@@ -29,6 +29,11 @@ import Alert from '@mui/material/Alert';
 import { bgcolor } from "@mui/system";
 import { styled } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Fuse from 'fuse.js';
 
 const BootstrapButton = styled(Button)({
   boxShadow: 'none',
@@ -88,24 +93,45 @@ const Triallist = (props) => {
   const [itemname, setitemname] = useState("");
   const [AddonArray2, setAddonArray2] = useState([]);
   const [searchParam] = useState(["name"]);
-  const [user_favour,setuser_favour] = useState([]);
+  const [user_favour, setuser_favour] = useState([]);
+  const [vegcheck, setvegcheck] = useState(0);
+  const [age, setAge] = useState('');
+  const [price_min,setprice_min] = useState(0);
+  const [price_max,setprice_max] = useState(1000);
+
+  const [query, updateQuery] = useState('');
+  const [searchedData,setsearchedData] = useState([]);
+  function onSearch(event) {
+    updateQuery(event.target.value);
+  }
+
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
+  const handleChangeveg = (event) => {
+    setvegcheck(event.target.value);
+  };
+  const handleprice_min = (event) =>{
+    setprice_min(event.target.value)
+  };
+  const handleprice_max = (event) =>{
+    setprice_max(event.target.value)
+  };
   let AddonArray = [];
   var today = new Date()
   var current_time;
-  var hour,minute;
-  if(today.getHours()<10)
-  {
-    hour='0'+today.getHours()
+  var hour, minute;
+  if (today.getHours() < 10) {
+    hour = '0' + today.getHours()
   }
-  else{
-    hour=today.getHours()
+  else {
+    hour = today.getHours()
   }
-  if(today.getMinutes()<10)
-  {
-    minute='0'+today.getMinutes()
+  if (today.getMinutes() < 10) {
+    minute = '0' + today.getMinutes()
   }
-  else{
-    minute=today.getMinutes()
+  else {
+    minute = today.getMinutes()
   }
   current_time = hour + ':' + minute
   console.log(current_time)
@@ -156,6 +182,7 @@ const Triallist = (props) => {
         setUsers(response.data);
         setSortedUsers(response.data);
         setSearchText("");
+        setsearchedData(response.data)
       })
       .catch((error) => {
         console.log(error);
@@ -215,8 +242,24 @@ const Triallist = (props) => {
       });
   }
   const customFunction = (event) => {
-    console.log(event.target.value);
     setSearchText(event.target.value);
+    const fuse = new Fuse(users,{
+      keys:["name"]
+    });
+    const results = fuse.search(searchText);
+    const finalResult = [];
+    console.log(results)
+    if(results.length){
+      for(let i=0;i<results.length;i++)
+      {
+        finalResult.push(results[i].item)
+      }
+      setsearchedData(finalResult)
+    }
+    else{
+      setsearchedData(users)
+    }
+    console.log(searchedData)
   };
 
   function search(items) {
@@ -230,6 +273,27 @@ const Triallist = (props) => {
         );
       });
     });
+  }
+
+  function check_function(VegORnot){
+    if(vegcheck===0 || (vegcheck===1 && VegORnot==="Veg") || (vegcheck===2 && VegORnot==="Non Veg"))
+    {
+      return true
+    }
+    else{
+      return false
+    }
+  }
+
+  function check_function_2(Price)
+  {
+    if(Price>=price_min && Price<=price_max)
+    {
+      return true
+    }
+    else{
+      return false
+    }
   }
 
   const PrepareOrder = (event) => {
@@ -313,6 +377,7 @@ const Triallist = (props) => {
     // console.table(AddonArray[0][1][1])
   }
 
+
   return (
     <div>
       <Grid container>
@@ -351,12 +416,14 @@ const Triallist = (props) => {
             <ListItem>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  Salary
+                  Filter By Price
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
                     id="standard-basic"
                     label="Enter Min"
+                    value={price_min}
+                    onChange={handleprice_min}
                     fullWidth={true}
                   />
                 </Grid>
@@ -365,6 +432,8 @@ const Triallist = (props) => {
                     id="standard-basic"
                     label="Enter Max"
                     fullWidth={true}
+                    value={price_max}
+                    onChange={handleprice_max}
                   />
                 </Grid>
               </Grid>
@@ -385,6 +454,22 @@ const Triallist = (props) => {
                 )}
               />
             </ListItem>
+           <ListItem>
+              <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="demo-simple-select-label">Veg/NonVeg</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={vegcheck}
+                  label="Veg/NonVeg"
+                  onChange={handleChangeveg}
+                >
+                  <MenuItem value={0}>{"Both"}</MenuItem>
+                  <MenuItem value={1}>Veg</MenuItem>
+                  <MenuItem value={2}>Non Veg</MenuItem>
+                </Select>
+              </FormControl>
+            </ListItem>
             <ListItem>
               <ColorButton variant="contained" onClick={(e) => { handleClickOpen1(e); }}>Show Favourite</ColorButton>
               <Dialog open={open1} onClose={handleClose1}>
@@ -393,20 +478,20 @@ const Triallist = (props) => {
                   <DialogContentText>
                     Favourite
                   </DialogContentText>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Shop Name</TableCell>
-                        <TableCell>Price</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    {user_favour.map((user, ind) => (
-                      <TableRow key={ind}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Shop Name</TableCell>
+                      <TableCell>Price</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  {user_favour.map((user, ind) => (
+                    <TableRow key={ind}>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.shop_name}</TableCell>
                       <TableCell>{user.price}</TableCell>
-                      </TableRow >
-                    ))}
+                    </TableRow >
+                  ))}
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose1}>Cancel</Button>
@@ -420,7 +505,6 @@ const Triallist = (props) => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell> Sr No.</TableCell>
                   <TableCell>
                     {" "}
                     <Button onClick={sortChange}>
@@ -444,10 +528,9 @@ const Triallist = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {search(users).map((user, ind) => (
-                  (user.Seller[0].OpenTime).localeCompare(user.Seller[0].CloseTime) === -1 && (user.Seller[0].OpenTime).localeCompare(current_time) === -1 && (current_time).localeCompare(user.Seller[0].CloseTime) === -1 ? (
+                {searchedData.map((user, ind) => (
+                  (user.Seller[0].OpenTime).localeCompare(user.Seller[0].CloseTime) === -1 && (user.Seller[0].OpenTime).localeCompare(current_time) === -1 && (current_time).localeCompare(user.Seller[0].CloseTime) === -1  && check_function(user.VegORnot) && check_function_2(user.price) ? (
                     <TableRow key={ind}>
-                      <TableCell>{ind}</TableCell>
                       <TableCell>{user.price}</TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.rating}</TableCell>
@@ -494,10 +577,9 @@ const Triallist = (props) => {
                     </TableRow>
                   ) : null
                 ))}
-                {search(users).map((user, ind) => (
-                  (user.Seller[0].OpenTime).localeCompare(current_time) === 1 || (current_time).localeCompare(user.Seller[0].CloseTime) === 1 ? (
+                {searchedData.map((user, ind) => (
+                  ((user.Seller[0].OpenTime).localeCompare(current_time) === 1 || (current_time).localeCompare(user.Seller[0].CloseTime) === 1) && check_function(user.VegORnot) && check_function_2(user.price) ? (
                     <TableRow bgcolor="lightgray" key={ind}>
-                      <TableCell>{ind}</TableCell>
                       <TableCell>{user.price}</TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.rating}</TableCell>

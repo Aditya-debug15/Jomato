@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 const Vendoredit = (props) => {
     const [tags, settags] = useState([]);
     const [price, setprice] = useState(0);
@@ -32,12 +36,11 @@ const Vendoredit = (props) => {
             .post("http://localhost:4000/vendor/editgetitem", newuser)
             .then((response) => {
                 var input = response.data[0].Addon
-                let i,len,text
+                let i, len, text
                 for (i = 0, len = input.length, text = ""; i < len; i++) {
                     text += input[i].Item + "," + input[i].Price
-                    if(i!=(len-1))
-                    {
-                        text +=","
+                    if (i != (len - 1)) {
+                        text += ","
                     }
                 }
                 setNames(text)
@@ -55,11 +58,11 @@ const Vendoredit = (props) => {
         console.log(names);
         let output = [];
         {
-            let i,len
-            for (i = 0, len = names.length; i < len; i+=2) {
-                const newAddon ={
+            let i, len
+            for (i = 0, len = names.length; i < len; i += 2) {
+                const newAddon = {
                     Item: names[i],
-                    Price:names[i+1]
+                    Price: names[i + 1]
                 }
                 output.push(newAddon)
             }
@@ -70,26 +73,30 @@ const Vendoredit = (props) => {
             price: price,
             VegORnot: VegORnot,
             tags: tags,
-            Addon:output
+            Addon: output
         };
 
-        axios
-            .post("http://localhost:4000/vendor/edititem", newUser)
-            .then((res) => {
-                if (res.data.status === "Success") {
-                    alert("Edited ") 
+        if (price <= 0) { alert("Price can't be negative") }
+        else {
+
+            axios
+                .post("http://localhost:4000/vendor/edititem", newUser)
+                .then((res) => {
+                    if (res.data.status === "Success") {
+                        alert("Edited ")
                         console.log(tags);
                         console.log(res.data.newvalues);
                         localStorage.removeItem('item_name');
                         window.location.href = "/"
-                }
-                else {
-                    alert("invalid input")
-                }
-            });
+                    }
+                    else {
+                        alert("invalid input")
+                    }
+                });
+        }
 
     };
-    const onSubmit2 = (event) =>{
+    const onSubmit2 = (event) => {
         event.preventDefault();
         localStorage.removeItem('item_name');
         window.location.href = "/"
@@ -119,28 +126,37 @@ const Vendoredit = (props) => {
                             <TextField
                                 label="new price"
                                 variant="outlined"
+                                input type="Number"
                                 value={price}
                                 onChange={onChangeprice}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
-                                label="Veg / Non Veg"
-                                variant="outlined"
-                                value={VegORnot}
-                                onChange={onChangeVegORnot}
-                            />
+                            <FormControl sx={{ m: 1, width: 225 }}>
+                                <InputLabel id="demo-simple-select-label">Veg/Non Veg</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={VegORnot}
+                                    defaultValue={""}
+                                    label="Food Type"
+                                    onChange={onChangeVegORnot}
+                                >
+                                    <MenuItem value={"Veg"}>Veg</MenuItem>
+                                    <MenuItem value={"Non Veg"}>Non Veg</MenuItem>
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={12}>
-                                <Button variant="contained" onClick={onSubmit}>
-                                    Edit
-                                </Button>
-                            </Grid>
+                            <Button variant="contained" onClick={onSubmit}>
+                                Edit
+                            </Button>
+                        </Grid>
                         <Grid item xs={12}>
-                                <Button variant="contained" onClick={onSubmit2}>
-                                    Don't Edit
-                                </Button>
-                            </Grid>
+                            <Button variant="contained" onClick={onSubmit2}>
+                                Don't Edit
+                            </Button>
+                        </Grid>
                     </Grid>
                 </div>
             </>
@@ -149,9 +165,9 @@ const Vendoredit = (props) => {
     else {
         return (
             <>
-            <h1>Select Item first</h1>
-            <br></br>
-            <h1> To select item <a href="/listitems">click here</a></h1>
+                <h1>Select Item first</h1>
+                <br></br>
+                <h1> To select item <a href="/listitems">click here</a></h1>
             </>
         )
     }

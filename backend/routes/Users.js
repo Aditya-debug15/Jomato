@@ -385,8 +385,8 @@ router.post("/ratingchange", (req, res) => {
                 }
                 else {
                     console.log(var2)
-                    var pre_rating = Number(var2.rating)
                     var pre_ratedorders = Number(var2.rated_order)
+                    var pre_rating = (Number(var2.rating)*pre_ratedorders)
                     pre_ratedorders += 1
                     pre_rating += req.body.rating
                     pre_rating /= pre_ratedorders

@@ -49,9 +49,6 @@ const UserNavbar = () => {
           <Button color="inherit" onClick={() => navigate("/showorder")}>
             View Orders
           </Button>
-          <Button color="inherit" onClick={() => navigate("/favourites")}>
-            Favourites
-          </Button>
           <Button color="inherit" onClick={() => navigate("/wallet")}>
             {wallet}
             <AccountBalanceWalletIcon fontSize="small" />

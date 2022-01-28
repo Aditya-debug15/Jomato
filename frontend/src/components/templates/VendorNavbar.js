@@ -36,6 +36,9 @@ const VendorNavbar = () => {
           <Button color="inherit" onClick={() => navigate("/listitems")}>
             View Food Items
           </Button>
+          <Button color="inherit" onClick={() => navigate("/stats")}>
+            View Stats
+          </Button>
           <Button color="inherit" onClick={() => {
             localStorage.clear();
             window.location.href = "/";

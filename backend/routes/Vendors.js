@@ -158,14 +158,15 @@ router.post("/removeitem", (req, res) => {
 })
 
 router.post("/showorder", (req, res) => {
-    Vendor.find({ email: req.body.email }, { _id: 1 }, (err, vendors) => {
+    Vendor.find({ email: req.body.email }, { _id: 1,shop_name:1 }, (err, vendors) => {
         if (err) {
             console.log(err);
             res.json({ status: "Failed" });
         }
         else {
             const id = vendors[0]["_id"];
-            //console.log(vendors[0]["_id"]);
+            const shop_name = vendors[0]["shop_name"]
+            console.log(vendors[0]["shop_name"]);
             var myquery = { seller: id };
             Order.find(myquery, (err, items) => {
                 if (err) {
@@ -173,7 +174,7 @@ router.post("/showorder", (req, res) => {
                     res.json({ status: "Failed" });
                 }
                 else {
-                    res.json({ status: "Success", items: items });
+                    res.json({ status: "Success", items: items, shop_name:shop_name });
                 }
             })
         }
@@ -302,7 +303,7 @@ router.post("/topfive", (req, res) => {
         }
         else {
             const id = vendor["_id"]
-            Item.find({ Creator: id }).sort({ orders: -1, rating: -1 }).limit(5).then(items => {
+            Item.find({ Creator: id }).sort({ completed_orders: -1, rating: -1 }).limit(5).then(items => {
                 if (!items) {
                     console.log("Wrong email")
                     res.json({ status: "Failed" })

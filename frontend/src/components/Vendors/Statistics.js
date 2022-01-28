@@ -70,7 +70,7 @@ const Statistics = (props) => {
                                         width: 100
                                     }}
                                 >
-                                    <Item sx={{ width: 200, height: 150 }} elevation={24}>
+                                    <Item sx={{ width: 250, height: 200 }} elevation={24}>
                                         <List sx={{ width: '100%', maxWidth: 200, bgcolor: 'background.paper' }}>
                                             <ListItem alignItems="flex-start">
                                                 <ListItemText
@@ -85,7 +85,7 @@ const Statistics = (props) => {
                                                             >
                                                                 {user.price}
                                                             </Typography>
-                                                            {" — Price"}<br></br>{user.orders}{" - orders"}<br></br>{user.rating}{" - rating"}
+                                                            {" — Price"}<br></br>{user.completed_orders}{" - orders"}<br></br>{user.rating}{" - rating"}<br></br>{user.rejected_orders}{" - rejected orders"}
                                                         </Fragment>
                                                     }
                                                 />
@@ -98,16 +98,16 @@ const Statistics = (props) => {
                             <ThemeProvider theme={darkTheme}>
                                 <Box
                                     sx={{
-                                        p: 1,
+                                        p: 2,
                                         bgcolor: 'background.default',
                                         display: 'grid',
                                         gridTemplateColumns: { md: '1fr 1fr' },
                                         gap: 1.5,
-                                        width: 200
+                                        width: 250
                                     }}
                                 >
-                                    <Item sx={{ width: 200, height: 150 }} elevation={24}>
-                                        <List sx={{ width: '100%', maxWidth: 200 }}>
+                                    <Item sx={{ width: 250, height: 200 }} elevation={12}>
+                                        <List sx={{ width: '100%', maxWidth: 255 }}>
                                             <ListItem alignItems="flex-start">
                                                 <ListItemText
                                                     primary={user.name}
@@ -118,7 +118,7 @@ const Statistics = (props) => {
                                                             >
                                                                 {user.price}
                                                             </Typography>
-                                                            {" — Price"}<br></br>{user.orders}{" - orders"}<br></br>{user.rating}{" - rating"}
+                                                            {" — Price"}<br></br>{user.completed_orders}{" - orders"}<br></br>{user.rating}{" - rating"}<br></br>{user.rejected_orders}{" - rejected orders"}
                                                         </Fragment>
                                                     }
                                                 />

@@ -22,6 +22,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Rating from '@mui/material/Rating';
+import Typography from '@mui/material/Typography';
 const ListOrder = (props) => {
     const [details, setDetails] = useState([]);
     const [open, setOpen] = useState(false);
@@ -195,7 +197,8 @@ const ListOrder = (props) => {
                                             ) : (
                                                 (row.status).localeCompare("Completed") === 0 && row.rating !== 0 ? (
                                                     <ul>
-                                                        <li>{row.rating}</li>
+                                                        <Typography component="legend">Rated As</Typography>
+                                                        <Rating name="read-only" value={row.rating} readOnly />
                                                     </ul>
                                                 ) : (
                                                     null
