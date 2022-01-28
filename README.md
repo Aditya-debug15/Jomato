@@ -8,6 +8,8 @@ On the other hand vendor can see their food items, edit them and can see the who
 
 **Email response is sent to the buyer upon order acception and rejection**. On order being placed amout is deducted from the wallet and upon rejection amount is refunded back
 
+**The website is deployed on Heroku**
+
 # MERN Stack Boilerplate
 
 ## Installations
