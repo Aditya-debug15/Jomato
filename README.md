@@ -10,6 +10,10 @@ On the other hand vendor can see their food items, edit them and can see the who
 
 **The website is deployed on Heroku**
 
+Backend https://jomato69.herokuapp.com/
+
+Frontend jomato69.surge.sh
+
 # MERN Stack Boilerplate
 
 ## Installations
