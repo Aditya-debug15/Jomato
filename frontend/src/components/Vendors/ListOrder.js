@@ -79,7 +79,7 @@ const ShowOrder = (props) => {
                         //     status: "Accepted",
                         // };
                         emailjs.send("service_lg4ccz8", "template_hno068a", {
-                            status: "Rejected",
+                            status: "Accepted",
                             shop_name: shop_name,
                             buyer: buyer,
                         }, "user_VFqheCHMAXwwWYzw2BulN")
